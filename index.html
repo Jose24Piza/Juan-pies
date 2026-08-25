@@ -18,10 +18,23 @@
 
     <link rel="shortcut icon" type="image/ico" href="img/favicon.ico"/>
 
+    <!-- iOS no lee el manifest para el icono/modo instalado: necesita sus propias etiquetas -->
+    <link rel="apple-touch-icon" href="img/icons/icon-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="One Piece">
+
 </head>
 <body>
+        <!-- Aviso de conexion -->
+        <div id="offline-banner" class="oculto">
+            <i class="fa fa-wifi"></i>
+            Sin conexión — lo que envíes se guardará y se enviará automáticamente al reconectar.
+        </div>
+        <!-- Fin aviso de conexion -->
+
         <!-- Titulo -->
-        <span class="first"> 
+        <span class="first">
             <span id="salir-btn" class="fa fa-sign-out-alt out oculto animated fadeIn"></span>
             <span id="titulo">
                 <i class="fa fa-users"> </i>
@@ -64,6 +77,25 @@
         </div>
         <!-- Fin Modal -->
 
+        <!-- Modal de camara -->
+        <div id="camera-modal" class="oculto">
+            <span class="first">
+                <span id="camera-cerrar" class="fa fa-times out"></span>
+                <span id="camera-titulo">Tomar foto</span>
+            </span>
+
+            <video id="camera-video" autoplay playsinline></video>
+            <canvas id="camera-canvas" class="oculto"></canvas>
+            <img id="camera-preview" class="oculto">
+
+            <div class="camera-controls">
+                <span id="camera-capturar" class="fa fa-circle camera-shutter"></span>
+                <span id="camera-repetir" class="camera-accion oculto">Repetir</span>
+                <span id="camera-enviar" class="camera-accion camera-accion-enviar oculto">Enviar</span>
+            </div>
+        </div>
+        <!-- Fin Modal de camara -->
+
 
         <!-- Seleccion de personaje -->
         <div id="seleccion" class="seleccion animated fadeIn fast" align="center">
@@ -86,6 +118,12 @@
 
             <div>
                 <img data-user="ussop" src="img/avatars/ussop.jpg" alt="ussop" class="seleccion-avatar">
+            </div>
+
+            <!-- Boton de instalacion (Escenario: Instalabilidad) -->
+            <div id="install-banner" class="install-banner oculto">
+                <i class="fa fa-download"></i>
+                Instalar aplicación
             </div>
 
         </div>
@@ -116,11 +154,13 @@
         </ul>
         <!-- Fin Lista de mensajes -->
 
+        <!-- Aviso corto (toast) -->
+        <div id="toast" class="toast oculto"></div>
+        <!-- Fin aviso corto -->
 
-      
-    
         <script src="js/libs/jquery.js"></script>
+        <script src="js/db.js"></script>
         <script src="js/app.js"></script>
-    
+
 </body>
 </html>
