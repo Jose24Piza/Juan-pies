@@ -94,7 +94,7 @@ self.addEventListener('notificationclick', e => {
     );
 });
 
-// ===== Background Sync =====
+// Background Sync 
 // Se dispara cuando el navegador recupera la conexion, para la tarea
 // registrada como reg.sync.register('sync-mensajes') en app.js
 self.addEventListener('sync', e => {
@@ -129,9 +129,7 @@ async function procesarColaPendientes() {
     }
 }
 
-// ===== Push =====
-// No hay servidor push real en este proyecto (no hay backend), pero el
-// evento queda implementado para cumplir el ciclo de vida del SW y para
+//  Push, ciclo de vida del SW y para
 // poder probarse manualmente desde DevTools -> Application -> Service
 // Workers -> "Push" (envia un payload de prueba sin necesidad de servidor).
 self.addEventListener('push', e => {

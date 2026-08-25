@@ -471,7 +471,17 @@ body.offline .first {
   top: 2.4em;
 }
 
-body.offline #modal,
+/* #modal usa top:1000px + un margin-top animado por JS (-=1000px) para
+   entrar en pantalla. Si le tocamos "top" aquí, la animación (que sigue
+   restando 1000px fijos) lo manda muy por encima de la pantalla y el
+   textarea queda inalcanzable. Por eso a #modal solo se le empuja el
+   contenido con padding, nunca su "top". */
+body.offline #modal {
+  padding-top: 2.4em;
+}
+
+/* #camera-modal no tiene ese truco de animación (top:0 fijo, sin
+   margin-top animado), así que sí puede desplazarse con "top" normalmente */
 body.offline #camera-modal {
   top: 2.4em;
   height: calc(100% - 2.4em);

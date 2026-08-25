@@ -47,12 +47,11 @@ var deferredPrompt = null;
 
 
 
-// ===== Codigo de la aplicación
+// app
 
 // Dibuja un mensaje (texto, foto o ubicación) en el timeline.
-// item.estado === 'pendiente' lo pinta atenuado con un reloj, para
-// distinguir lo que sigue en la cola offline de lo ya enviado.
 function renderMensaje(item) {
+// item.estado === 'pendiente' lo pinta atenuado con un reloj, para
 
     var esPendiente = item.estado === 'pendiente';
     var idAttr = item.id !== undefined && item.id !== null ? item.id : '';
@@ -60,6 +59,7 @@ function renderMensaje(item) {
     var cuerpo = item.tipo === 'foto'
         ? '<img class="foto-mensaje" src="' + item.foto + '">'
         : item.mensaje;
+// distinguir lo que sigue en la cola offline de lo ya enviado.
 
     var iconoPendiente = esPendiente
         ? ' <i class="fa fa-clock pendiente-icon" title="Pendiente de enviar"></i>'
@@ -487,42 +487,50 @@ notifBtn.on('click', function() {
 
 // ===== Instalación (PWA) =====
 
+// El botón queda visible siempre (instalada o no), para que en la demo
+// se pueda mostrar aunque el navegador ya no dispare el prompt real.
+installBanner.removeClass('oculto');
+
+var esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+
+function appEstaInstalada() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
 // Chrome/Edge disparan este evento cuando la app cumple los requisitos de
 // instalabilidad. Lo guardamos para poder mostrarlo cuando el usuario
 // toque el botón, en vez de dejar que el navegador decida cuándo ofrecerlo.
 window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     deferredPrompt = e;
-    installBanner.removeClass('oculto');
 });
 
 installBanner.on('click', async function() {
 
-    if ( !deferredPrompt ) {
-        // iOS Safari (y otros navegadores sin beforeinstallprompt) no
-        // permiten disparar la instalación por código: se instala a mano
+    if ( deferredPrompt ) {
+        // Hay un prompt real disponible: se dispara la instalación de verdad
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        return;
+    }
+
+    if ( appEstaInstalada() ) {
+        mostrarToast('Ya tienes la aplicación instalada — la estás usando en modo app.');
+        return;
+    }
+
+    if ( esIOS ) {
+        // iOS Safari nunca dispara beforeinstallprompt: se instala a mano
         mostrarToast('Para instalar: toca "Compartir" y elige "Agregar a pantalla de inicio".');
         return;
     }
 
-    installBanner.addClass('oculto');
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
+    mostrarToast('Este navegador todavía no ofrece instalación automática. Probá recargar la página o usar Chrome/Edge.');
 
 });
 
 window.addEventListener('appinstalled', function() {
-    installBanner.addClass('oculto');
     deferredPrompt = null;
     mostrarToast('¡Aplicación instalada correctamente!');
 });
-
-// iOS no dispara beforeinstallprompt: mostramos igual el boton con
-// instrucciones manuales, salvo que ya este corriendo instalada
-var esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-var yaInstalada = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-if ( esIOS && !yaInstalada ) {
-    installBanner.removeClass('oculto');
-}

@@ -3,7 +3,7 @@
  * Service Worker (sw.js). Se carga con <script> en index.html y con
  * importScripts() en sw.js, así que va en formato de funciones globales
  * clásicas (nada de módulos ES).
- *
+ 
  * Guarda mensajes/fotos/ubicaciones que el usuario intenta enviar
  * mientras no hay conexión, para que el Service Worker (Background Sync)
  * o la propia página (fallback) los procesen al recuperar la red.
