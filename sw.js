@@ -1,6 +1,6 @@
 importScripts('js/sw-utils.js');
 
-const STATIC_CACHE = 'static-v2';
+const STATIC_CACHE = 'static-v3';
 const DYNAMIC_CACHE = 'dynamic-v1';
 const INMUTABLE_CACHE = 'inmutable-v1';
 
@@ -27,6 +27,9 @@ const APP_SHELL_INMUTABLE = [
 ];
 
 self.addEventListener('install', e => {
+    // Activa el SW nuevo de inmediato, sin esperar a que se cierren las pestañas viejas
+    self.skipWaiting();
+
     const cacheStatic = caches.open(STATIC_CACHE).then(cache =>
         cache.addAll(APP_SHELL));
     const cacheInmutable = caches.open(INMUTABLE_CACHE).then(cache =>
@@ -36,12 +39,15 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
     const respuesta = caches.keys().then(keys => {
-        keys.forEach(key => {
-            if (key !== STATIC_CACHE && key.includes('static')) {
-                return caches.delete(key);
-            }
-        });
-    });
+        return Promise.all(
+            keys.map(key => {
+                if (key !== STATIC_CACHE && key.includes('static')) {
+                    return caches.delete(key);
+                }
+            })
+        );
+    }).then(() => self.clients.claim()); // toma el control de las pestañas abiertas ya mismo
+
     e.waitUntil(respuesta);
 });
 
@@ -56,4 +62,23 @@ self.addEventListener('fetch', e => {
         }
     });
     e.respondWith(respuesta);
+});
+
+// Al hacer click en la notificacion, enfoca la app si ya esta abierta
+// o abre una pestaña nueva si no lo esta
+self.addEventListener('notificationclick', e => {
+    e.notification.close();
+
+    e.waitUntil(
+        clients.matchAll({ type: 'window' }).then(listaClientes => {
+            for (const cliente of listaClientes) {
+                if (cliente.url.includes(self.registration.scope) && 'focus' in cliente) {
+                    return cliente.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow('/');
+            }
+        })
+    );
 });

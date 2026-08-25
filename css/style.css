@@ -279,8 +279,12 @@ and (-webkit-device-pixel-ratio : 3) {
     .new {
       top: 40px !important;
     }
-    
+
     .out {
+      top: 40px !important;
+    }
+
+    .notif {
       top: 40px !important;
     }
 
@@ -292,13 +296,19 @@ and (-webkit-device-pixel-ratio : 3) {
   
   .new {
     position: absolute;
-    right: 5%; 
+    right: 5%;
     top: 30px;
   }
 
   .out {
     position: absolute;
     left: 5%;
+    top: 30px;
+  }
+
+  .notif {
+    position: absolute;
+    right: 16%;
     top: 30px;
   }
   
